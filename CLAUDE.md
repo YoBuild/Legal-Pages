@@ -1,57 +1,165 @@
-# Claude.ai Instructions for this Repository
+# CLAUDE.md
 
-Short, focused guidance to help Claude-based agents become productive quickly.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Quickstart
+## Quick Start
 
-- Install PHP deps: run `composer install` in the project root.
-- Run a local PHP server from the repo root so the frontend can reach the backend:
-
-```powershell
-composer install;
+**Install dependencies and run dev server:**
+```bash
+composer install
 php -S localhost:8000 -t .
-# then open http://localhost:8000/legal-generator.html
 ```
 
-Note: `legal-generator.html` is the active frontend. `legal-page-generator.html` is an older template kept for reference.
+Then visit: http://localhost:8000/legal-generator.html
 
-## Big picture (short)
+**Run tests:**
+```bash
+vendor/bin/phpunit tests/
+# Or specific test:
+vendor/bin/phpunit tests/Unit/LegalPageGeneratorTest.php
+```
 
-- PHP library code lives under `Y0hn/Gens/Legal/` and is autoloaded via `composer.json` (PSR-4: `Y0hn\` => `Y0hn/`).
-- Markdown templates are in `legal/` organized by `base/`, `personal/`, `ecommerce/`, `social/`, and `placeholders/`.
-- Frontend: `legal-generator.html` + `js/legal-generator.js` (or legacy `legal-page-manager.js`) calls the AJAX endpoint `ajax/` with FormData.
-- Server AJAX entrypoint: `ajax/ajax_legal_handler.php` (expects POST requests and delegates to `Y0hn\Gens\Legal\LegalPageController`).
-- Uses `Yohns\Core\Config` for site configuration integration.
+## Architecture Overview
 
-New AJAX fields
-- `output_format` (optional): one of `html`, `markdown`, or `both`. Controls what the server returns/saves. Defaults: preview -> `html`, generate -> `both`.
-- `theme` (optional): explicit UI theme preference `light`, `dark`, or `auto`. If not provided, the controller will attempt to read client hints and otherwise fall back to `dark`.
-Concrete conventions to use in tasks
+This is a **legal page generator** that creates customizable Privacy Policies, Terms of Service, and other legal documents from Markdown templates with placeholder substitution.
 
-- Placeholders: `{{category:field}}` (e.g., `{{company:name}}`, `{{website:url}}`, `{{current:date}}`). Use these exact keys when editing templates.
-- Flat keys supported: e.g., `company_name` may be mapped to `company:name` by the generator.
-- Conditionals: `{{if:token}}...{{endif}}`. `token` may be a website type (`personal|ecommerce|social`) or a compliance/feature key checked against placeholders (`gdpr`, `ccpa`, etc.). See `legal/base/privacy-policy.md` for examples.
-- Template resolution: prefer `legal/{websiteType}/{pageType}.md`; fall back to `legal/base/{pageType}.md`.
+### Request Flow
+1. Frontend (`legal-generator.html` + `js/legal-generator.js`) →
+2. AJAX endpoint (`ajax/ajax_legal_handler.php`) →
+3. Controller (`Y0hn\Gens\Legal\LegalPageController`) →
+4. Generator (`Y0hn\Gens\Legal\LegalPageGenerator`)
 
-## Files to reference (high value)
+### Directory Structure
+```
+Y0hn/Gens/Legal/          # PHP library (PSR-4: Y0hn\ => Y0hn/)
+  ├── LegalPageController.php    # AJAX request handler
+  ├── LegalPageGenerator.php     # Core template processor
+  ├── LegalPageTemplate.php      # Template discovery
+  ├── LegalPageConfig.php        # Config integration
+  ├── LegalContentPresets.php    # Default values by website type
+  └── LegalPageForm.php          # Form state management
 
-- `composer.json` — dependency list and PSR-4 autoload mapping
-- `implementation-guide.md` — canonical description and PHP class stubs (see source for merged implementation)
-- `ajax/ajax_legal_handler.php` — how the frontend maps to backend controller methods
-- `legal-generator.html` and `js/legal-generator.js` — current UI and AJAX flow
-- `Y0hn/Gens/Legal/*.php` — merged generator, template mgmt, config, controller, presets
-- `legal/base/*.md` and `legal/{personal,ecommerce,social}/*.md` — template examples and placeholder usage
-- `legal/placeholders/cheat-sheet.md` — canonical placeholder names and examples
+legal/                    # Markdown templates
+  ├── base/               # Generic templates (fallback)
+  ├── personal/           # Personal blog variants
+  ├── ecommerce/          # E-commerce variants
+  ├── social/             # Social network variants
+  └── placeholders/       # Documentation
 
-Editing rules (required)
+ajax/ajax_legal_handler.php     # AJAX entrypoint (POST only)
+legal-generator.html             # Active frontend UI
+js/legal-generator.js            # Frontend logic
+config/                          # Site and legal config
+tests/Unit/                      # PHPUnit tests
+```
 
-- Do not rename or remove placeholder tokens in templates without updating the generator logic that maps placeholders (see `LegalPageGenerator::setPlaceholders()` in `implementation-guide.md`).
-- Keep file operations confined to the intended output directory. The example generator writes to `/path/to/generated/legal/` — change to a safe path when enabling write operations.
-- For AJAX flows, preserve FormData keys and expected response shape: JSON with `success`, `html`, `markdown`, `filename`, etc.
+## Template System
 
-If you need a minimal task to validate changes, prefer:
+### Placeholder Format
+Templates use `{{category:field}}` syntax:
+```markdown
+{{company:name}} operates {{website:url}}
+Last updated: {{current:date}}
+```
 
-1. Add or update a small template under `legal/base/` (e.g., `privacy-policy.md`) using `{{current:date}}` and one placeholder such as `{{company:name}}`.
-2. Use the `LegalPageGenerator` (per `implementation-guide.md`) to call `generate()` and `convertToHtml()` in a short PHP script that loads Composer's autoloader.
+Common categories: `company`, `website`, `data`, `ecommerce`, `social`, `compliance`, `current`, `feature`
 
-If you'd like, I can also add a small `scripts/preview.php` runner and a one-file PHPUnit test for the generator; tell me and I'll create them.
+See `legal/placeholders/cheat-sheet.md` for complete reference.
+
+### Flat-to-Colon Mapping
+The generator accepts both formats:
+- `company_name` → mapped to `company:name`
+- `company:name` → used directly
+
+### Conditional Sections
+```markdown
+{{if:ecommerce}}
+This content only appears for e-commerce sites.
+{{endif}}
+
+{{if:gdpr}}
+GDPR-specific compliance text.
+{{endif}}
+```
+
+Condition tokens checked against:
+- Website type: `personal`, `ecommerce`, `social`
+- Compliance/feature flags: `gdpr`, `ccpa`, `medical_content`, etc.
+
+### Template Resolution
+Priority order:
+1. `legal/{websiteType}/{pageType}.md` (e.g., `legal/ecommerce/privacy-policy.md`)
+2. `legal/base/{pageType}.md` (fallback)
+
+## AJAX API
+
+**Endpoint:** `ajax/ajax_legal_handler.php` (POST FormData)
+
+### Actions
+- `init` - Load server config defaults
+- `get_page_types` - List available legal page types
+- `get_website_presets` - Get defaults for website type
+- `preview` - Generate HTML preview
+- `generate` - Generate and save final output
+
+### Response Format
+```json
+{
+  "success": true|false,
+  "html": "...",       // HTML output
+  "markdown": "...",   // Markdown source
+  "filename": "...",
+  "message": "..."
+}
+```
+
+### New AJAX Fields (as of latest)
+- `output_format`: `html|markdown|both` (controls what server returns/saves)
+- `theme`: `light|dark|auto` (UI theme preference)
+
+## Config Integration
+
+Uses `Yohns\Core\Config` to pull site defaults:
+- `config/site.php` - Company name, URL, contact info
+- `config/legal.php` - Legal-specific settings
+
+Config keys auto-populate placeholders:
+```php
+'company_name' (site) → company:name
+'site_url' (site) → website:url
+```
+
+## Important Constraints
+
+1. **Do NOT rename placeholders** in templates without updating `LegalPageGenerator::setPlaceholders()` mapping logic
+2. **Keep file writes** confined to designated output directory (currently `generated/legal/`)
+3. **Preserve FormData keys** in AJAX - frontend expects specific response shape
+4. **Theme detection** - Controller attempts client hints, falls back to `dark` if `theme` not provided
+
+## Testing Minimal Changes
+
+To validate template or generator changes:
+1. Edit a template under `legal/base/` (e.g., add `{{company:name}}`)
+2. Create quick test script:
+```php
+<?php
+require 'vendor/autoload.php';
+use Y0hn\Gens\Legal\LegalPageGenerator;
+
+$gen = new LegalPageGenerator('privacy-policy', 'personal', [
+    'company:name' => 'Test Co'
+]);
+echo $gen->generate();
+```
+3. Or run existing PHPUnit tests: `vendor/bin/phpunit tests/`
+
+## Key Files for Reference
+
+- `legal/implementation-guide.md` - Original class design specs
+- `legal/placeholders/cheat-sheet.md` - Complete placeholder reference
+- `ajax/ajax_legal_handler.php` - AJAX routing logic
+- `Y0hn/Gens/Legal/LegalPageGenerator.php` - Core template engine (lines 1-300 contain key methods)
+
+## Legacy Note
+
+`legal-page-generator.html` is an older template kept for reference. Active UI is `legal-generator.html`.

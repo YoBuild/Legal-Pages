@@ -21,9 +21,61 @@ function initForm() {
 	// Set up event listeners
 	setupEventListeners();
 
+	// Run lightweight sanity checks (adds missing step IDs if needed)
+	runSanityChecks();
+
 	// Show step 1 by default
 	showStep(1);
 	hideLoader();
+}
+
+/**
+ * Run simple runtime sanity checks and fix small issues automatically.
+ * - Ensures `#step-1..#step-4` exist (assigns IDs to `.form-step` elements if missing)
+ * - Verifies presence of next/prev buttons and loader element
+ */
+function runSanityChecks() {
+	try {
+		const steps = document.querySelectorAll('.form-step');
+
+		// Ensure there are at least 1 step
+		if (!steps || steps.length === 0) {
+			console.error('[sanity] No .form-step elements found');
+			return;
+		}
+
+		// Ensure step IDs exist for 1..4; assign to sequential .form-step elements if missing
+		for (let i = 1; i <= 4; i++) {
+			const id = `step-${i}`;
+			if (!document.getElementById(id)) {
+				const el = steps[i - 1];
+				if (el) {
+					el.id = id;
+					console.info(`[sanity] Assigned missing id '${id}' to .form-step (index ${i - 1})`);
+				} else {
+					console.warn(`[sanity] Expected .form-step for ${id} not found`);
+				}
+			}
+		}
+
+		// Check next/prev buttons exist for each step and warn if not
+		for (let i = 1; i <= 4; i++) {
+			const stepEl = document.getElementById(`step-${i}`);
+			if (!stepEl) continue;
+			const nextBtn = stepEl.querySelector('.next-step');
+			const prevBtn = stepEl.querySelector('.prev-step');
+			if (!nextBtn && i < 4) console.warn(`[sanity] step-${i} is missing a .next-step button`);
+			if (!prevBtn && i > 1) console.warn(`[sanity] step-${i} is missing a .prev-step button`);
+		}
+
+		// Ensure loader exists
+		const loader = document.getElementById('form-loader');
+		if (!loader) console.warn('[sanity] #form-loader element not found');
+
+		console.info('[sanity] checks complete');
+	} catch (e) {
+		console.error('[sanity] runSanityChecks failed', e);
+	}
 }
 
 /**
@@ -38,7 +90,7 @@ async function getServerDefaults() {
 		const formData = new FormData();
 		formData.append('action', 'init');
 
-		const response = await fetch('/ajax/', {
+		const response = await fetch('/ajax/ajax_legal_handler.php', {
 			method: 'POST',
 			body: formData
 		});
@@ -146,15 +198,35 @@ function loadPageTypes() {
 	const templateCards = document.querySelectorAll('.template-card');
 	templateCards.forEach(card => {
 		card.addEventListener('click', function() {
+			console.log('[template-card] clicked', this.dataset.templateId);
 			// Clear previous selection
 			templateCards.forEach(c => c.classList.remove('selected'));
 
 			// Mark this card as selected
 			this.classList.add('selected');
 
-			// Enable the next button
-			const nextButton = document.querySelector('#step-1 .next-step');
-			nextButton.disabled = false;
+			// Enable the next button. Prefer the explicit step ID; fall back to any visible .form-step
+			let nextButton = null;
+			const step1 = document.getElementById('step-1');
+			if (step1) {
+				nextButton = step1.querySelector('.next-step');
+			} else {
+				console.warn('[template-card] #step-1 not found; falling back to .form-step.active');
+				const activeStep = document.querySelector('.form-step.active');
+				if (activeStep) nextButton = activeStep.querySelector('.next-step');
+			}
+
+			if (!nextButton) {
+				// final fallback: any .next-step in the document
+				nextButton = document.querySelector('.next-step');
+			}
+			if (nextButton) {
+				nextButton.disabled = false;
+				nextButton.removeAttribute('disabled');
+				console.log('[template-card] enabled next button', nextButton);
+			} else {
+				console.warn('[template-card] next button not found');
+			}
 
 			// Store the selected template ID
 			sessionStorage.setItem('selectedTemplateId', this.dataset.templateId);
@@ -167,34 +239,53 @@ function loadPageTypes() {
  * Set up event listeners for navigation and form submission
  */
 function setupEventListeners() {
-	// Next step buttons
-	const nextButtons = document.querySelectorAll('.next-step');
-	nextButtons.forEach(button => {
-		button.addEventListener('click', function() {
-			const nextStep = parseInt(this.dataset.next);
+	// Next step buttons - use event delegation on document
+	document.addEventListener('click', function(e) {
+		const button = e.target.closest('.next-step');
+		if (button && !button.disabled) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			const nextStep = parseInt(button.dataset.next);
+			console.log(`[next-step] Clicked, moving to step ${nextStep}`, button);
 
 			// If going to step 3, load the appropriate fields
 			if (nextStep === 3) {
 				loadCustomizationFields();
 			}
 
-			// If going to step 4, generate the preview
+			// If going to step 4, save form data first then generate the preview
 			if (nextStep === 4) {
+				// Save form data from step 3 before generating preview
+				const customizeForm = document.getElementById('customize-form');
+				if (customizeForm) {
+					const formData = new FormData(customizeForm);
+					const formDataObj = {};
+					formData.forEach((value, key) => {
+						formDataObj[key] = value;
+					});
+					sessionStorage.setItem('formData', JSON.stringify(formDataObj));
+					console.log('[next-step] Saved form data to sessionStorage', formDataObj);
+				}
 				generatePreview();
 			}
 
 			showStep(nextStep);
-		});
-	});
+		}
+	}, true); // use capture phase to ensure it fires first
 
-	// Previous step buttons
-	const prevButtons = document.querySelectorAll('.prev-step');
-	prevButtons.forEach(button => {
-		button.addEventListener('click', function() {
-			const prevStep = parseInt(this.dataset.prev);
+	// Previous step buttons - use event delegation on document
+	document.addEventListener('click', function(e) {
+		const button = e.target.closest('.prev-step');
+		if (button) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			const prevStep = parseInt(button.dataset.prev);
+			console.log(`[prev-step] Clicked, moving to step ${prevStep}`, button);
 			showStep(prevStep);
-		});
-	});
+		}
+	}, true); // use capture phase
 
 	// Website type selection
 	const websiteTypeCards = document.querySelectorAll('.website-type-card');
@@ -225,7 +316,8 @@ function setupEventListeners() {
 
 	// Form submission for customization
 	const customizeForm = document.getElementById('customize-form');
-	customizeForm.addEventListener('submit', function(e) {
+	if (customizeForm) {
+		customizeForm.addEventListener('submit', function(e) {
 		e.preventDefault();
 
 		// Collect all form data
@@ -245,11 +337,15 @@ function setupEventListeners() {
 
 		// Generate preview
 		generatePreview();
-	});
+		});
+	} else {
+		console.debug('customize-form not found; skipping attach');
+	}
 
 	// GDPR checkbox toggle for DPO email field
 	const gdprCheckbox = document.getElementById('compliance-gdpr');
-	gdprCheckbox.addEventListener('change', function() {
+	if (gdprCheckbox) {
+		gdprCheckbox.addEventListener('change', function() {
 		const gdprSection = document.querySelector('.gdpr-section');
 
 		if (this.checked) {
@@ -257,21 +353,39 @@ function setupEventListeners() {
 		} else {
 			gdprSection.style.display = 'none';
 		}
-	});
+		});
+	} else {
+		console.debug('compliance-gdpr checkbox not found; skipping attach');
+	}
 
 	// Download buttons
-	document.getElementById('download-md').addEventListener('click', function() {
-		downloadContent('markdown');
-	});
+	const downloadMdBtn = document.getElementById('download-md');
+	if (downloadMdBtn) {
+		downloadMdBtn.addEventListener('click', function() {
+			downloadContent('markdown');
+		});
+	} else {
+		console.debug('download-md button not found');
+	}
 
-	document.getElementById('download-html').addEventListener('click', function() {
-		downloadContent('html');
-	});
+	const downloadHtmlBtn = document.getElementById('download-html');
+	if (downloadHtmlBtn) {
+		downloadHtmlBtn.addEventListener('click', function() {
+			downloadContent('html');
+		});
+	} else {
+		console.debug('download-html button not found');
+	}
 
 	// Generate final button
-	document.getElementById('generate-final').addEventListener('click', function() {
-		generateFinal();
-	});
+	const generateFinalBtn = document.getElementById('generate-final');
+	if (generateFinalBtn) {
+		generateFinalBtn.addEventListener('click', function() {
+			generateFinal();
+		});
+	} else {
+		console.debug('generate-final button not found');
+	}
 }
 
 /**
@@ -286,7 +400,20 @@ function showStep(stepNumber) {
 
 	// Show the target step
 	const targetStep = document.getElementById(`step-${stepNumber}`);
-	targetStep.classList.add('active');
+	if (!targetStep) {
+		console.warn(`[showStep] target step element not found: step-${stepNumber}`);
+		// try to find a matching element by data-step or fallback to visible form-step
+		let fallback = document.querySelector(`.form-step[data-step="${stepNumber}"]`);
+		if (!fallback) fallback = document.querySelector('.form-step');
+		if (fallback) {
+			fallback.classList.add('active');
+		} else {
+			console.error('[showStep] no .form-step elements found to show');
+			return;
+		}
+	} else {
+		targetStep.classList.add('active');
+	}
 
 	// Update step indicator
 	const indicators = document.querySelectorAll('.step-indicator .step');
@@ -579,7 +706,7 @@ function generatePreview() {
 	ajaxData.append('formData[websiteType]', websiteType);
 
 	// Make AJAX call to server
-	fetch('/ajax/', {
+	fetch('/ajax/ajax_legal_handler.php', {
 		method: 'POST',
 		body: ajaxData
 	})
@@ -628,8 +755,7 @@ function getThemePreference() {
 		return stored;
 	}
 
-	// Default to 'auto' to let server detect via prefers-color-scheme
-	// Default to 'dark' by preference
+	// Default to 'dark' to enable dark mode by default when no explicit user choice
 	return 'dark';
 }
 
@@ -662,8 +788,7 @@ function initializeTheme() {
 		return;
 	}
 
-	// Default to 'auto' (use system preference)
-	// Default to dark mode unless user previously chose otherwise
+	// Default to dark mode when no user preference is set
 	applyTheme('dark');
 }
 
@@ -781,7 +906,7 @@ function generateFinal() {
 	ajaxData.append('formData[websiteType]', websiteType);
 
 	// Make AJAX call to server
-	fetch('/ajax/', {
+	fetch('/ajax/ajax_legal_handler.php', {
 		method: 'POST',
 		body: ajaxData
 	})
@@ -823,7 +948,6 @@ function generateFinal() {
  */
 function showLoader() {
 	document.getElementById('form-loader').style.display = 'flex';
-	console.log('Loader shown');
 }
 
 /**
@@ -831,5 +955,4 @@ function showLoader() {
  */
 function hideLoader() {
 	document.getElementById('form-loader').style.display = 'none';
-	console.log('Loader hidden');
 }
