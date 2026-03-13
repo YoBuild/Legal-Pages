@@ -439,6 +439,59 @@ class LegalPageGenerator {
 	}
 
 	/**
+	 * Add Bootstrap 5.3.8 CSS classes to HTML elements using DOMDocument
+	 *
+	 * @param string $html Raw HTML from CommonMark
+	 * @return string HTML with Bootstrap classes added
+	 */
+	private function addBootstrapClasses(string $html): string
+	{
+		if (empty(trim($html))) {
+			return $html;
+		}
+
+		$doc = new \DOMDocument();
+		// Suppress warnings for HTML5 tags, load as UTF-8
+		@$doc->loadHTML(
+			'<?xml encoding="UTF-8"><div id="bs-wrapper">' . $html . '</div>',
+			LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+		);
+
+		$classMap = [
+			'table'      => 'table table-striped',
+			'blockquote' => 'blockquote ps-3 border-start border-4',
+			'hr'         => 'my-4',
+			'p'          => 'mb-2',
+			'a'          => 'link-primary',
+			'ul'         => 'ps-3',
+			'ol'         => 'ps-3',
+			'h1'         => 'mb-3',
+			'h2'         => 'mb-3',
+			'h3'         => 'mb-3',
+			'h4'         => 'mb-3',
+			'h5'         => 'mb-3',
+			'h6'         => 'mb-3',
+		];
+
+		foreach ($classMap as $tag => $classes) {
+			$elements = $doc->getElementsByTagName($tag);
+			foreach ($elements as $el) {
+				$existing = $el->getAttribute('class');
+				$el->setAttribute('class', $existing ? "$existing $classes" : $classes);
+			}
+		}
+
+		// Extract inner HTML of wrapper div
+		$wrapper = $doc->getElementById('bs-wrapper');
+		$output = '';
+		foreach ($wrapper->childNodes as $child) {
+			$output .= $doc->saveHTML($child);
+		}
+
+		return $output;
+	}
+
+	/**
 	 * Save generated content to a file
 	 *
 	 * @param string $content The content to save
