@@ -80,7 +80,7 @@ function runSanityChecks() {
 
 /**
  * Fetch server-side config defaults (company info, compliance flags, etc.)
- * Called during form initialization to populate fields from config/site.php and config/legal.php
+ * Called during form initialization to populate fields from config/site.php and config/legal-pages.php
  *
  * @returns {Promise<object>} Defaults from server, or empty object on error
  */
