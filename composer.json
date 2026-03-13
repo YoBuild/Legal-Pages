@@ -3,6 +3,11 @@
     "description": "Generate customizable legal pages (Privacy Policy, Terms of Service, etc.) from Markdown templates with placeholder substitution — outputs Markdown or Bootstrap 5.3.8 HTML",
     "type": "library",
     "license": "MIT",
+    "homepage": "https://github.com/YoBuild/Legal-Pages",
+    "support": {
+        "issues": "https://github.com/YoBuild/Legal-Pages/issues",
+        "source": "https://github.com/YoBuild/Legal-Pages"
+    },
     "autoload": {
         "psr-4": {
             "Yohns\\": "Yohns/"
