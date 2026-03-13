@@ -343,6 +343,65 @@ return [
 
 These values are automatically used as placeholder defaults. Values passed to the constructor override config values.
 
+## Using Content Without Saving Files
+
+You can use the generator to get content directly as PHP variables without writing any files. This is useful when you want to embed legal pages in your own templates, serve them dynamically, or store them in a database.
+
+```php
+<?php
+require 'vendor/autoload.php';
+
+use Yohns\Gens\Legal\LegalPageGenerator;
+
+$config = require __DIR__ . '/config/legal-pages.php';
+
+$gen = new LegalPageGenerator('privacy-policy', 'personal', $config);
+
+// Get content as variables — no files written
+$markdown = $gen->generate();
+$html     = $gen->convertToHtml(full: true);
+
+// Use $html in your own layout
+echo "<main class='legal-content'>$html</main>";
+```
+
+To generate multiple pages without saving files, set `$outputDir` to `false` and collect the results:
+
+```php
+<?php
+require 'vendor/autoload.php';
+
+use Yohns\Gens\Legal\LegalPageGenerator;
+
+$config      = require __DIR__ . '/config/legal-pages.php';
+$websiteType = 'personal';
+$outputDir   = false;
+
+$pages = ['privacy-policy', 'terms-of-service', 'cookie-policy'];
+
+$results = [];
+
+foreach ($pages as $pageType) {
+    $gen = new LegalPageGenerator($pageType, $websiteType, $config);
+
+    $markdown = $gen->generate();
+    $html     = $gen->convertToHtml(full: true);
+
+    if ($outputDir) {
+        $gen->savePage($markdown, "$pageType.md", $outputDir);
+        $gen->savePage($html, "$pageType.html", $outputDir);
+    }
+
+    $results[$pageType] = [
+        'markdown' => $markdown,
+        'html'     => $html,
+    ];
+}
+
+// Use the content directly
+echo $results['privacy-policy']['html'];
+```
+
 ## Full Example: Generate All Legal Pages
 
 ```php
@@ -355,9 +414,11 @@ $outputDir = __DIR__ . '/generated/legal';
 $websiteType = 'ecommerce';
 
 $config = [
-    'company' => ['name' => 'Acme Inc', 'email' => 'legal@acme.com'],
-    'website' => ['url' => 'https://acme.com', 'name' => 'Acme Store'],
-    'compliance' => ['gdpr' => 'true'],
+    'company:name'  => 'Acme Inc',
+    'company:email' => 'legal@acme.com',
+    'website:url'   => 'https://acme.com',
+    'website:name'  => 'Acme Store',
+    'compliance:gdpr' => true,
 ];
 
 $pages = [

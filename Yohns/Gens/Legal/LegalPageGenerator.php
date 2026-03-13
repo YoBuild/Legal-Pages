@@ -435,7 +435,7 @@ class LegalPageGenerator {
 		}
 
 		// Convert markdown to HTML using League\CommonMark
-		$converter = new \League\CommonMark\CommonMarkConverter();
+		$converter = new \League\CommonMark\GithubFlavoredMarkdownConverter();
 		$html = $converter->convert($content)->getContent();
 
 		// Add Bootstrap classes to HTML elements

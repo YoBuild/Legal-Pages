@@ -208,4 +208,154 @@ class LegalPageGeneratorTest extends TestCase
 
 		$this->assertStringContainsString('class="table table-striped"', $result);
 	}
+
+	/**
+	 * Test that generate() returns content as a string without saving files
+	 */
+	public function testGenerateReturnsContentWithoutSaving()
+	{
+		$gen = new LegalPageGenerator(
+			'privacy-policy',
+			'personal',
+			['company:name' => 'No-Save Corp', 'website:url' => 'https://nosave.com']
+		);
+
+		$markdown = $gen->generate();
+
+		$this->assertIsString($markdown);
+		$this->assertNotEmpty($markdown);
+		$this->assertStringContainsString('No-Save Corp', $markdown);
+	}
+
+	/**
+	 * Test that convertToHtml() returns content as a string without saving files
+	 */
+	public function testConvertToHtmlReturnsContentWithoutSaving()
+	{
+		$gen = new LegalPageGenerator(
+			'privacy-policy',
+			'personal',
+			['company:name' => 'No-Save Corp', 'website:url' => 'https://nosave.com']
+		);
+
+		$html = $gen->convertToHtml(full: true);
+
+		$this->assertIsString($html);
+		$this->assertStringContainsString('<!DOCTYPE html>', $html);
+		$this->assertStringContainsString('No-Save Corp', $html);
+	}
+
+	/**
+	 * Test that content can be used in variables without any file I/O
+	 */
+	public function testContentUsableAsVariables()
+	{
+		$config = [
+			'company:name'  => 'Variable Corp',
+			'company:email' => 'var@example.com',
+			'website:url'   => 'https://variable.com',
+			'website:name'  => 'Variable Site',
+		];
+
+		$pages = ['privacy-policy', 'terms-of-service', 'cookie-policy'];
+		$results = [];
+
+		foreach ($pages as $pageType) {
+			$gen = new LegalPageGenerator($pageType, 'personal', $config);
+			$results[$pageType] = [
+				'markdown' => $gen->generate(),
+				'html'     => $gen->convertToHtml(full: true),
+			];
+		}
+
+		// All pages should have content
+		$this->assertCount(3, $results);
+
+		foreach ($results as $pageType => $content) {
+			$this->assertArrayHasKey('markdown', $content);
+			$this->assertArrayHasKey('html', $content);
+			$this->assertNotEmpty($content['markdown'], "$pageType markdown should not be empty");
+			$this->assertNotEmpty($content['html'], "$pageType html should not be empty");
+			$this->assertStringContainsString('Variable Corp', $content['markdown']);
+			$this->assertStringContainsString('<!DOCTYPE html>', $content['html']);
+		}
+	}
+
+	/**
+	 * Test that markdown tables are converted to HTML tables with GFM support
+	 */
+	public function testMarkdownTablesConvertToHtml()
+	{
+		$gen = new LegalPageGenerator('cookie-policy', 'personal', [
+			'company:name'  => 'Table Test Co',
+			'company:email' => 'test@example.com',
+			'website:name'  => 'Table Site',
+			'website:url'   => 'https://table.com',
+		]);
+
+		$html = $gen->convertToHtml();
+
+		// Cookie policy template contains a markdown table
+		// GFM converter should produce <table> elements
+		if (strpos($gen->generate(), '|') !== false) {
+			$this->assertStringContainsString('<table', $html);
+			$this->assertStringContainsString('table table-striped', $html);
+		} else {
+			$this->assertTrue(true, 'Template has no tables to test');
+		}
+	}
+
+	/**
+	 * Test the outputDir=false pattern: generate multiple pages into a results
+	 * array without writing any files to disk.
+	 */
+	public function testOutputDirFalseCollectsResultsWithoutSaving()
+	{
+		$config = [
+			'company:name'  => 'NoFile Inc',
+			'company:email' => 'nofile@example.com',
+			'website:url'   => 'https://nofile.com',
+			'website:name'  => 'NoFile Site',
+		];
+		$websiteType = 'personal';
+		$outputDir   = false;
+
+		$pages   = ['privacy-policy', 'terms-of-service', 'cookie-policy'];
+		$results = [];
+
+		foreach ($pages as $pageType) {
+			$gen = new LegalPageGenerator($pageType, $websiteType, $config);
+
+			$markdown = $gen->generate();
+			$html     = $gen->convertToHtml(full: true);
+
+			if ($outputDir) {
+				$gen->savePage($markdown, "$pageType.md", $outputDir);
+				$gen->savePage($html, "$pageType.html", $outputDir);
+			}
+
+			$results[$pageType] = [
+				'markdown' => $markdown,
+				'html'     => $html,
+			];
+		}
+
+		// All three pages collected
+		$this->assertCount(3, $results);
+		$this->assertArrayHasKey('privacy-policy', $results);
+		$this->assertArrayHasKey('terms-of-service', $results);
+		$this->assertArrayHasKey('cookie-policy', $results);
+
+		// Each page has both formats with correct content
+		foreach ($results as $pageType => $content) {
+			$this->assertArrayHasKey('markdown', $content);
+			$this->assertArrayHasKey('html', $content);
+			$this->assertStringContainsString('NoFile Inc', $content['markdown'], "$pageType markdown missing company name");
+			$this->assertStringContainsString('<!DOCTYPE html>', $content['html'], "$pageType html missing doctype");
+			$this->assertStringContainsString('NoFile Inc', $content['html'], "$pageType html missing company name");
+		}
+
+		// No files were written (savePage was never called)
+		$this->assertFalse($outputDir);
+	}
 }

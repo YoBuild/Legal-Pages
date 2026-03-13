@@ -6,3 +6,4 @@ vendor/
 composer.lock
 php.log
 config/site.php
+/.YOHN
