@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(ls -la /d/0-Laragon/www/2026_websites/LegalPages/*.md)"
-    ]
-  }
-}

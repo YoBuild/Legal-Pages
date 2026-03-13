@@ -1,5 +1,8 @@
 vendor/
-.vscode/sftp.json
+.claude/
+.vscode/
 .info/
+.phpunit.cache
 composer.lock
 php.log
+config/site.php
