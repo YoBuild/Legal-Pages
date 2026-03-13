@@ -8,6 +8,7 @@
             "Yohns\\": "Yohns/"
         }
     },
+    "bin": ["bin/legal-pages"],
     "authors": [
         {
             "name": "Yohn",

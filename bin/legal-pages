@@ -1,0 +1,55 @@
+#!/usr/bin/env php
+<?php
+/**
+ * CLI entry point for yohns/legal-pages
+ *
+ * Usage: php vendor/bin/legal-pages publish [--config] [--quickstart] [--ui] [--dir=PATH]
+ */
+
+$autoloadPaths = [
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+];
+
+$autoloaded = false;
+foreach ($autoloadPaths as $path) {
+    if (file_exists($path)) {
+        require $path;
+        $autoloaded = true;
+        break;
+    }
+}
+
+if (!$autoloaded) {
+    fwrite(STDERR, "Error: Cannot find composer autoloader. Run 'composer install' first.\n");
+    exit(1);
+}
+
+use Yohns\Gens\Legal\Console\PublishCommand;
+
+$packageRoot = dirname(__DIR__);
+
+if (file_exists(__DIR__ . '/../../../autoload.php')) {
+    $projectRoot = dirname(__DIR__, 4);
+} else {
+    $projectRoot = dirname(__DIR__);
+}
+
+$args = array_slice($argv, 1);
+$command = $args[0] ?? '';
+
+if ($command === 'publish') {
+    $cmd = new PublishCommand($packageRoot, $projectRoot);
+    exit($cmd->run(array_slice($args, 1)));
+}
+
+echo "Usage: php vendor/bin/legal-pages <command>\n\n";
+echo "Commands:\n";
+echo "  publish    Copy starter files into your project\n\n";
+echo "Options for publish:\n";
+echo "  --config      Copy config/legal-pages.php\n";
+echo "  --quickstart  Copy generate.php quickstart script\n";
+echo "  --ui          Copy web UI (HTML, JS, AJAX handler)\n";
+echo "  --dir=PATH    Output directory (default: legal-pages/)\n\n";
+echo "  No flags = publish everything\n";
+exit(0);
