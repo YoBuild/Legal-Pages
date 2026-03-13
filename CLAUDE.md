@@ -120,13 +120,13 @@ Priority order:
 ## Config Integration
 
 Uses `Yohns\Core\Config` to pull site defaults:
-- `config/site.php` - Company name, URL, contact info
-- `config/legal.php` - Legal-specific settings
+- `config/config.php` - Company name, URL, contact info
+- `config/legal-pages.php` - Legal-specific settings, compliance flags, page-specific placeholders
 
 Config keys auto-populate placeholders:
 ```php
-'company_name' (site) → company:name
-'site_url' (site) → website:url
+'company_name' (config) → company:name
+'site_url' (config) → website:url
 ```
 
 ## Important Constraints

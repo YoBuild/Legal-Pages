@@ -21,7 +21,7 @@ class LegalPageConfig {
 	private array $customConfig = [];
 
 	/** @var string Config file name for custom legal page configuration */
-	private const CONFIG_FILE = 'legal.php';
+	private const CONFIG_FILE = 'legal-pages.php';
 
 	/**
 	 * Constructor - Initializes the configuration manager
@@ -57,19 +57,19 @@ class LegalPageConfig {
 			// Load common information from site configuration
 			$this->commonInfo = [
 				// Company information
-				'company:name'       => Config::get('company_name', 'site') ?? '',
-				'company:legal_name' => Config::get('company_legal_name', 'site') ?? '',
-				'company:address'    => Config::get('company_address', 'site') ?? '',
-				'company:city'       => Config::get('company_city', 'site') ?? '',
-				'company:state'      => Config::get('company_state', 'site') ?? '',
-				'company:zip'        => Config::get('company_zip', 'site') ?? '',
-				'company:country'    => Config::get('company_country', 'site') ?? 'United States',
-				'company:phone'      => Config::get('company_phone', 'site') ?? '',
-				'company:email'      => Config::get('contact_email', 'site') ?? '',
+				'company:name'       => Config::get('company_name', 'config') ?? '',
+				'company:legal_name' => Config::get('company_legal_name', 'config') ?? '',
+				'company:address'    => Config::get('company_address', 'config') ?? '',
+				'company:city'       => Config::get('company_city', 'config') ?? '',
+				'company:state'      => Config::get('company_state', 'config') ?? '',
+				'company:zip'        => Config::get('company_zip', 'config') ?? '',
+				'company:country'    => Config::get('company_country', 'config') ?? 'United States',
+				'company:phone'      => Config::get('company_phone', 'config') ?? '',
+				'company:email'      => Config::get('contact_email', 'config') ?? '',
 
 				// Website information
-				'website:url'        => Config::get('site_url', 'site') ?? '',
-				'website:name'       => Config::get('site_name', 'site') ?? '',
+				'website:url'        => Config::get('site_url', 'config') ?? '',
+				'website:name'       => Config::get('site_name', 'config') ?? '',
 
 				// Dates and times
 				'current:year'       => date('Y'),
@@ -93,7 +93,7 @@ class LegalPageConfig {
 	private function loadCustomConfig(): void {
 		try {
 			// Try to load custom legal configuration
-			$this->customConfig = Config::getAll('legal') ?? [];
+			$this->customConfig = Config::getAll('legal-pages') ?? [];
 		} catch (\Exception $e) {
 			// Config not available or legal config doesn't exist
 			$this->customConfig = [];
@@ -167,11 +167,11 @@ class LegalPageConfig {
 		try {
 			// Try to save to config using Config class
 			// If Config has a way to save, use it; otherwise try default location
-			Config::set('legal', $this->customConfig);
+			Config::set('legal-pages', $this->customConfig);
 			return true;
 		} catch (\Exception $e) {
 			// Fallback: try to write directly to a config file
-			$defaultConfigFile = __DIR__ . '/../../config/legal.php';
+			$defaultConfigFile = __DIR__ . '/../../config/legal-pages.php';
 			$configDir = dirname($defaultConfigFile);
 
 			if (!is_dir($configDir)) {

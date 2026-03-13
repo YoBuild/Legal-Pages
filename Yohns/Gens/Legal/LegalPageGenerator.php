@@ -84,13 +84,13 @@ class LegalPageGenerator {
 		// Try to get common information from config
 		try {
 			$this->commonSubstitutions = [
-				'company:name'    => Config::get('company_name', 'site') ?? '',
-				'company:address' => Config::get('company_address', 'site') ?? '',
-				'company:email'   => Config::get('contact_email', 'site') ?? '',
-				'company:phone'   => Config::get('contact_phone', 'site') ?? '',
-				'company:country' => Config::get('company_country', 'site') ?? 'United States',
-				'website:url'     => Config::get('site_url', 'site') ?? '',
-				'website:name'    => Config::get('site_name', 'site') ?? '',
+				'company:name'    => Config::get('company_name', 'config') ?? '',
+				'company:address' => Config::get('company_address', 'config') ?? '',
+				'company:email'   => Config::get('contact_email', 'config') ?? '',
+				'company:phone'   => Config::get('contact_phone', 'config') ?? '',
+				'company:country' => Config::get('company_country', 'config') ?? 'United States',
+				'website:url'     => Config::get('site_url', 'config') ?? '',
+				'website:name'    => Config::get('site_name', 'config') ?? '',
 				'current:date'    => date('F j, Y'),
 				'current:year'    => date('Y'),
 			];

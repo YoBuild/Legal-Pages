@@ -1,5 +1,5 @@
 <?php
-// config/site.php
+// config/config.php
 
 return [
 	// Company information
@@ -17,5 +17,5 @@ return [
 	'site_url'            => 'http://localhost:8000',
 	'site_name'           => 'Example Site',
 
-	// Defaults for feature/compliance flags may be stored in config/legal.php
+	// Defaults for feature/compliance flags are stored in config/legal-pages.php
 ];

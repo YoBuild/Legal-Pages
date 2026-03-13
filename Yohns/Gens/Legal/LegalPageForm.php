@@ -73,12 +73,12 @@ class LegalPageForm {
 	private function loadCompanyInfo(): void {
 		// Try to get company information from config
 		$this->companyInfo = [
-			'company_name'    => Config::get('company_name', 'site') ?? '',
-			'company_address' => Config::get('company_address', 'site') ?? '',
-			'company_email'   => Config::get('contact_email', 'site') ?? '',
-			'company_phone'   => Config::get('contact_phone', 'site') ?? '',
-			'website_url'     => Config::get('site_url', 'site') ?? '',
-			'website_name'    => Config::get('site_name', 'site') ?? '',
+			'company_name'    => Config::get('company_name', 'config') ?? '',
+			'company_address' => Config::get('company_address', 'config') ?? '',
+			'company_email'   => Config::get('contact_email', 'config') ?? '',
+			'company_phone'   => Config::get('contact_phone', 'config') ?? '',
+			'website_url'     => Config::get('site_url', 'config') ?? '',
+			'website_name'    => Config::get('site_name', 'config') ?? '',
 		];
 	}
 
