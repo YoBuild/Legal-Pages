@@ -1,7 +1,7 @@
 <?php
-// src/Y0hn/Gens/Legal/LegalPageForm.php
+// src/Yohns/Gens/Legal/LegalPageForm.php
 
-namespace Y0hn\Gens\Legal;
+namespace Yohns\Gens\Legal;
 
 use Yohns\Core\Config;
 
@@ -11,7 +11,7 @@ use Yohns\Core\Config;
  * This class generates forms for creating various legal documents such as
  * Terms of Service, Privacy Policies, etc. based on templates with placeholders.
  *
- * @package Y0hn\Gens\Legal
+ * @package Yohns\Gens\Legal
  */
 class LegalPageForm {
 	/** @var array The available legal page types */

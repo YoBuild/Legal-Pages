@@ -1,7 +1,7 @@
 <?php
-// src/Y0hn/Gens/Legal/LegalPageTemplate.php
+// src/Yohns/Gens/Legal/LegalPageTemplate.php
 
-namespace Y0hn\Gens\Legal;
+namespace Yohns\Gens\Legal;
 
 /**
  * LegalPageTemplate - Manages storage and retrieval of legal page templates
@@ -9,7 +9,7 @@ namespace Y0hn\Gens\Legal;
  * This class handles the storage and retrieval of template files, including
  * creating default templates if they don't exist.
  *
- * @package Y0hn\Gens\Legal
+ * @package Yohns\Gens\Legal
  */
 class LegalPageTemplate {
 	/** @var string The template directory path */

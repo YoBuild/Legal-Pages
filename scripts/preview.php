@@ -13,8 +13,8 @@
 // Require Composer autoloader
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Y0hn\Gens\Legal\LegalPageGenerator;
-use Y0hn\Gens\Legal\LegalPageConfig;
+use Yohns\Gens\Legal\LegalPageGenerator;
+use Yohns\Gens\Legal\LegalPageConfig;
 
 // Get parameters from query string or command line
 $pageType = $_GET['pageType'] ?? null;

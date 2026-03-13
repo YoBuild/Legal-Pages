@@ -1,11 +1,11 @@
 <?php
-// AJAX handler for legal page generation - routes to unified Y0hn\Gens\Legal controller
+// AJAX handler for legal page generation - routes to unified Yohns\Gens\Legal controller
 
 // Require autoloader
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // Import the merged Legal controller
-use Y0hn\Gens\Legal\LegalPageController;
+use Yohns\Gens\Legal\LegalPageController;
 
 // Set header for JSON responses
 header('Content-Type: application/json');

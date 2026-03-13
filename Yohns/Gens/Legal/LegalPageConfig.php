@@ -1,7 +1,7 @@
 <?php
-// src/Y0hn/Gens/Legal/LegalPageConfig.php
+// src/Yohns/Gens/Legal/LegalPageConfig.php
 
-namespace Y0hn\Gens\Legal;
+namespace Yohns\Gens\Legal;
 
 use Yohns\Core\Config;
 
@@ -11,7 +11,7 @@ use Yohns\Core\Config;
  * Provides access to common company/website information from Yohns\Core\Config
  * and supports saving/loading custom placeholder configurations for legal pages.
  *
- * @package Y0hn\Gens\Legal
+ * @package Yohns\Gens\Legal
  */
 class LegalPageConfig {
 	/** @var array Common information that can be used across all legal pages */

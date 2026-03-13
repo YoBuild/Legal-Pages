@@ -1,13 +1,13 @@
 <?php
 /**
- * Tests for Y0hn\Gens\Legal\LegalPageGenerator
+ * Tests for Yohns\Gens\Legal\LegalPageGenerator
  *
  * Run with: vendor/bin/phpunit tests/Unit/LegalPageGeneratorTest.php
  */
 
 namespace Tests\Unit;
 
-use Y0hn\Gens\Legal\LegalPageGenerator;
+use Yohns\Gens\Legal\LegalPageGenerator;
 use PHPUnit\Framework\TestCase;
 
 class LegalPageGeneratorTest extends TestCase

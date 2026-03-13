@@ -1,7 +1,7 @@
 <?php
-// src/Y0hn/Gens/Legal/LegalPageController.php
+// src/Yohns/Gens/Legal/LegalPageController.php
 
-namespace Y0hn\Gens\Legal;
+namespace Yohns\Gens\Legal;
 
 /**
  * LegalPageController - Unified controller for legal page generation
@@ -9,7 +9,7 @@ namespace Y0hn\Gens\Legal;
  * Handles AJAX requests for both multi-step form workflows (init/next_step/previous_step)
  * and direct page generation flows (showForm/selectType/generatePage/deletePage).
  *
- * @package Y0hn\Gens\Legal
+ * @package Yohns\Gens\Legal
  */
 class LegalPageController {
 	/** @var LegalPageForm The form state manager */

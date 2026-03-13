@@ -7,7 +7,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Y0hn\Gens\Legal\LegalPageController;
+use Yohns\Gens\Legal\LegalPageController;
 
 echo "=== Testing LegalPageController init action ===\n\n";
 

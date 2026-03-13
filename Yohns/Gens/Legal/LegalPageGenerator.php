@@ -1,7 +1,7 @@
 <?php
-// src/Y0hn/Gens/Legal/LegalPageGenerator.php
+// src/Yohns/Gens/Legal/LegalPageGenerator.php
 
-namespace Y0hn\Gens\Legal;
+namespace Yohns\Gens\Legal;
 
 use Yohns\Core\Config;
 
@@ -14,7 +14,7 @@ use Yohns\Core\Config;
  * Supports both Markdown (.md) and HTML (.html) templates with placeholder replacement
  * and conditional section handling for {{if:token}}...{{endif}} blocks.
  *
- * @package Y0hn\Gens\Legal
+ * @package Yohns\Gens\Legal
  */
 class LegalPageGenerator {
 	/** @var string The page type (e.g., 'privacy-policy', 'terms-of-service') */
@@ -58,7 +58,7 @@ class LegalPageGenerator {
 			$this->templateDir = $templateDir;
 		} else {
 			// Default: look for legal/ in the project root
-			// Y0hn/Gens/Legal/ -> ../../legal
+			// Yohns/Gens/Legal/ -> ../../legal
 			$this->templateDir = realpath(__DIR__ . '/../../legal');
 			if (!$this->templateDir) {
 				// Fallback to absolute path from project root

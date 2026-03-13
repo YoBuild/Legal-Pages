@@ -1,5 +1,5 @@
 <?php
-namespace Y0hn\Gens\Legal;
+namespace Yohns\Gens\Legal;
 
 /**
  * LegalContentPresets - Provides default content presets for different website types
@@ -7,7 +7,7 @@ namespace Y0hn\Gens\Legal;
  * Supplies default placeholder values and compliance settings based on website type
  * (personal, ecommerce, social).
  *
- * @package Y0hn\Gens\Legal
+ * @package Yohns\Gens\Legal
  */
 class LegalContentPresets {
 	/**
