@@ -10,21 +10,19 @@ namespace Tests\Unit;
 use Yohns\Gens\Legal\LegalPageGenerator;
 use PHPUnit\Framework\TestCase;
 
-class LegalPageGeneratorTest extends TestCase
-{
+class LegalPageGeneratorTest extends TestCase {
 	private LegalPageGenerator $generator;
 
-	protected function setUp(): void
-	{
+	protected function setUp(): void {
 		// Create generator for testing with minimal config
 		$this->generator = new LegalPageGenerator(
 			'privacy-policy',
 			'personal',
 			[
-				'company:name' => 'Test Company',
+				'company:name'  => 'Test Company',
 				'company:email' => 'test@example.com',
-				'website:name' => 'Test Site',
-				'website:url' => 'https://example.com',
+				'website:name'  => 'Test Site',
+				'website:url'   => 'https://example.com',
 			]
 		);
 	}
@@ -32,8 +30,7 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test that placeholders are normalized correctly
 	 */
-	public function testPlaceholderNormalization()
-	{
+	public function testPlaceholderNormalization() {
 		// Test setting with colon format
 		$this->generator->setPlaceholder('company', 'name', 'ACME Corp');
 		$placeholders = $this->generator->getPlaceholders();
@@ -44,11 +41,10 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test that flat placeholder keys are converted to colon format
 	 */
-	public function testFlatPlaceholderConversion()
-	{
+	public function testFlatPlaceholderConversion() {
 		$this->generator->setPlaceholders([
 			'company_name' => 'My Company',
-			'website_url' => 'https://mysite.com',
+			'website_url'  => 'https://mysite.com',
 		]);
 
 		$placeholders = $this->generator->getPlaceholders();
@@ -61,8 +57,7 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test conditional section processing with website type
 	 */
-	public function testConditionalProcessingByWebsiteType()
-	{
+	public function testConditionalProcessingByWebsiteType() {
 		$content = "This is always here.\n";
 		$content .= "{{if:personal}}Personal text{{endif}}\n";
 		$content .= "{{if:ecommerce}}E-commerce text{{endif}}\n";
@@ -83,8 +78,7 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test conditional section processing with compliance flags
 	 */
-	public function testConditionalProcessingByComplianceFlag()
-	{
+	public function testConditionalProcessingByComplianceFlag() {
 		$this->generator->setPlaceholder('compliance', 'gdpr', 'true');
 		$this->generator->setPlaceholder('compliance', 'ccpa', 'false');
 
@@ -108,8 +102,7 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test placeholder extraction from content
 	 */
-	public function testPlaceholderExtraction()
-	{
+	public function testPlaceholderExtraction() {
 		$content = 'Hello {{company:name}}, visit {{website:url}} for more info.';
 		$placeholders = $this->generator->extractPlaceholders($content);
 
@@ -121,8 +114,7 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test that conditional directives are not extracted as placeholders
 	 */
-	public function testConditionalNotExtractedAsPlaceholder()
-	{
+	public function testConditionalNotExtractedAsPlaceholder() {
 		$content = '{{if:personal}}Text{{endif}}';
 		$placeholders = $this->generator->extractPlaceholders($content);
 
@@ -133,8 +125,7 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test template finding (requires actual template files)
 	 */
-	public function testTemplateFinding()
-	{
+	public function testTemplateFinding() {
 		// This test will pass if template files exist
 		$template = $this->generator->findTemplate();
 
@@ -150,8 +141,7 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test that convertToHtml adds Bootstrap classes to elements
 	 */
-	public function testConvertToHtmlAddsBootstrapClasses()
-	{
+	public function testConvertToHtmlAddsBootstrapClasses() {
 		$gen = new LegalPageGenerator(
 			'privacy-policy',
 			'personal',
@@ -173,8 +163,7 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test that convertToHtml(full: true) wraps in full HTML page with Bootstrap CDN
 	 */
-	public function testConvertToHtmlFullPage()
-	{
+	public function testConvertToHtmlFullPage() {
 		$gen = new LegalPageGenerator(
 			'privacy-policy',
 			'personal',
@@ -194,8 +183,7 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test that tables get Bootstrap table classes
 	 */
-	public function testBootstrapTableClasses()
-	{
+	public function testBootstrapTableClasses() {
 		$gen = new LegalPageGenerator('privacy-policy', 'personal', []);
 
 		// Use reflection to test addBootstrapClasses directly
@@ -212,8 +200,7 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test that generate() returns content as a string without saving files
 	 */
-	public function testGenerateReturnsContentWithoutSaving()
-	{
+	public function testGenerateReturnsContentWithoutSaving() {
 		$gen = new LegalPageGenerator(
 			'privacy-policy',
 			'personal',
@@ -230,8 +217,7 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test that convertToHtml() returns content as a string without saving files
 	 */
-	public function testConvertToHtmlReturnsContentWithoutSaving()
-	{
+	public function testConvertToHtmlReturnsContentWithoutSaving() {
 		$gen = new LegalPageGenerator(
 			'privacy-policy',
 			'personal',
@@ -248,8 +234,7 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test that content can be used in variables without any file I/O
 	 */
-	public function testContentUsableAsVariables()
-	{
+	public function testContentUsableAsVariables() {
 		$config = [
 			'company:name'  => 'Variable Corp',
 			'company:email' => 'var@example.com',
@@ -284,8 +269,7 @@ class LegalPageGeneratorTest extends TestCase
 	/**
 	 * Test that markdown tables are converted to HTML tables with GFM support
 	 */
-	public function testMarkdownTablesConvertToHtml()
-	{
+	public function testMarkdownTablesConvertToHtml() {
 		$gen = new LegalPageGenerator('cookie-policy', 'personal', [
 			'company:name'  => 'Table Test Co',
 			'company:email' => 'test@example.com',
@@ -309,8 +293,7 @@ class LegalPageGeneratorTest extends TestCase
 	 * Test the outputDir=false pattern: generate multiple pages into a results
 	 * array without writing any files to disk.
 	 */
-	public function testOutputDirFalseCollectsResultsWithoutSaving()
-	{
+	public function testOutputDirFalseCollectsResultsWithoutSaving() {
 		$config = [
 			'company:name'  => 'NoFile Inc',
 			'company:email' => 'nofile@example.com',
@@ -318,16 +301,16 @@ class LegalPageGeneratorTest extends TestCase
 			'website:name'  => 'NoFile Site',
 		];
 		$websiteType = 'personal';
-		$outputDir   = false;
+		$outputDir = false;
 
-		$pages   = ['privacy-policy', 'terms-of-service', 'cookie-policy'];
+		$pages = ['privacy-policy', 'terms-of-service', 'cookie-policy'];
 		$results = [];
 
 		foreach ($pages as $pageType) {
 			$gen = new LegalPageGenerator($pageType, $websiteType, $config);
 
 			$markdown = $gen->generate();
-			$html     = $gen->convertToHtml(full: true);
+			$html = $gen->convertToHtml(full: true);
 
 			if ($outputDir) {
 				$gen->savePage($markdown, "$pageType.md", $outputDir);

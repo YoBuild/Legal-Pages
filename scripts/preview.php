@@ -86,22 +86,22 @@ try {
 		<head>
 			<title>Legal Page Preview - <?php echo ucwords(str_replace('-', ' ', $pageType)); ?></title>
 			<style>
-				body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; }
-				.controls { background: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
-				.controls input, .controls select, .controls button { padding: 8px; font-size: 14px; }
-				.preview { border: 1px solid #ddd; padding: 20px; border-radius: 5px; }
-				h1 { color: #333; }
-				.meta { color: #666; font-size: 13px; margin-bottom: 20px; }
+				body {max-width: 900px;margin: 0 auto;padding: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;}
+				.controls {background: #f0f0f0;padding: 15px;border-radius: 5px;margin-bottom: 20px;}
+				.controls input,.controls select,.controls button {padding: 8px;font-size: 14px;}
+				.preview {border: 1px solid #ddd;padding: 20px;border-radius: 5px;}
+				h1 {color: #333;}
+				.meta {color: #666;font-size: 13px;margin-bottom: 20px;}
 			</style>
 		</head>
 		<body>
 			<h1>Legal Page Preview</h1>
-
 			<div class="controls">
 				<form method="get" style="display: flex; gap: 10px; flex-wrap: wrap;">
 					<div>
 						<label for="pageType">Page Type:</label>
-						<input type="text" name="pageType" id="pageType" value="<?php echo htmlspecialchars($pageType); ?>" placeholder="privacy-policy">
+						<input type="text" name="pageType" id="pageType" value="<?php echo htmlspecialchars($pageType); ?>"
+							placeholder="privacy-policy">
 					</div>
 					<div>
 						<label for="websiteType">Website Type:</label>
@@ -122,13 +122,11 @@ try {
 					<button type="submit">Generate</button>
 				</form>
 			</div>
-
 			<div class="meta">
 				<strong>Template:</strong> <?php echo htmlspecialchars($template); ?><br>
 				<strong>Page Type:</strong> <?php echo htmlspecialchars($pageType); ?><br>
 				<strong>Website Type:</strong> <?php echo htmlspecialchars($websiteType); ?>
 			</div>
-
 			<?php if ($format === 'markdown'): ?>
 				<div class="preview">
 					<h2>Markdown Output</h2>

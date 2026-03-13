@@ -54,7 +54,7 @@ foreach ($pages as $pageType) {
     $gen = new LegalPageGenerator($pageType, $websiteType, $config);
 
     $markdown = $gen->generate();
-    $html     = $gen->convertToHtml(full: true);
+    $html = $gen->convertToHtml(full: true);
 
     if ($outputDir) {
         $gen->savePage($markdown, "$pageType.md", $outputDir);

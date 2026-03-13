@@ -29,46 +29,46 @@ $outputDir = __DIR__ . '/generated';
 // ── Pages to Generate ────────────────────────────────────────────
 // Uncomment the pages you want to generate.
 $pages = [
-    // Base (available for all website types)
-    'privacy-policy',
-    'terms-of-service',
-    'cookie-policy',
-    // 'dmca-policy',
-    // 'accessibility-statement',
+	// Base (available for all website types)
+	'privacy-policy',
+	'terms-of-service',
+	'cookie-policy',
+	// 'dmca-policy',
+	// 'accessibility-statement',
 
-    // Personal
-    // 'blog-disclaimer',
+	// Personal
+	// 'blog-disclaimer',
 
-    // E-commerce
-    // 'refund-policy',
-    // 'shipping-policy',
+	// E-commerce
+	// 'refund-policy',
+	// 'shipping-policy',
 
-    // Social
-    // 'content-policy',
+	// Social
+	// 'content-policy',
 ];
 // ── End config ───────────────────────────────────────────────────
 
 $results = [];
 
 foreach ($pages as $pageType) {
-    $gen = new LegalPageGenerator($pageType, $websiteType, $config);
+	$gen = new LegalPageGenerator($pageType, $websiteType, $config);
 
-    $markdown = $gen->generate();
-    $html     = $gen->convertToHtml(full: true);
+	$markdown = $gen->generate();
+	$html = $gen->convertToHtml(full: true);
 
-    if ($outputDir) {
-        $gen->savePage($markdown, "$pageType.md", $outputDir);
-        $gen->savePage($html, "$pageType.html", $outputDir);
-        echo "  [OK] $pageType.md + $pageType.html\n";
-    }
+	if ($outputDir) {
+		$gen->savePage($markdown, "$pageType.md", $outputDir);
+		$gen->savePage($html, "$pageType.html", $outputDir);
+		echo "  [OK] $pageType.md + $pageType.html\n";
+	}
 
-    // Content is always available in $results regardless of $outputDir
-    $results[$pageType] = [
-        'markdown' => $markdown,
-        'html'     => $html,
-    ];
+	// Content is always available in $results regardless of $outputDir
+	$results[$pageType] = [
+		'markdown' => $markdown,
+		'html'     => $html,
+	];
 }
 
 if ($outputDir) {
-    echo "\nDone! Files saved to: $outputDir/\n";
+	echo "\nDone! Files saved to: $outputDir/\n";
 }

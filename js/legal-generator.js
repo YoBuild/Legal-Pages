@@ -90,7 +90,7 @@ async function getServerDefaults() {
 		const formData = new FormData();
 		formData.append('action', 'init');
 
-		const response = await fetch('/ajax/ajax_legal_handler.php', {
+		const response = await fetch('ajax/ajax_legal_handler.php', {
 			method: 'POST',
 			body: formData
 		});
@@ -173,7 +173,7 @@ function loadPageTypes() {
 			title: 'Blog Disclaimer',
 			description: 'Clarifies limitations of blog content and your liability.',
 			icon: 'journal-text',
-			websiteTypes: ['personal']
+			websiteTypes: ['personal', 'ecommerce']
 		}
 	];
 
@@ -706,7 +706,7 @@ function generatePreview() {
 	ajaxData.append('formData[websiteType]', websiteType);
 
 	// Make AJAX call to server
-	fetch('/ajax/ajax_legal_handler.php', {
+	fetch('ajax/ajax_legal_handler.php', {
 		method: 'POST',
 		body: ajaxData
 	})
@@ -906,7 +906,7 @@ function generateFinal() {
 	ajaxData.append('formData[websiteType]', websiteType);
 
 	// Make AJAX call to server
-	fetch('/ajax/ajax_legal_handler.php', {
+	fetch('ajax/ajax_legal_handler.php', {
 		method: 'POST',
 		body: ajaxData
 	})
