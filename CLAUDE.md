@@ -26,12 +26,12 @@ This is a **legal page generator** that creates customizable Privacy Policies, T
 ### Request Flow
 1. Frontend (`legal-generator.html` + `js/legal-generator.js`) →
 2. AJAX endpoint (`ajax/ajax_legal_handler.php`) →
-3. Controller (`Y0hn\Gens\Legal\LegalPageController`) →
-4. Generator (`Y0hn\Gens\Legal\LegalPageGenerator`)
+3. Controller (`Yohns\Gens\Legal\LegalPageController`) →
+4. Generator (`Yohns\Gens\Legal\LegalPageGenerator`)
 
 ### Directory Structure
 ```
-Y0hn/Gens/Legal/          # PHP library (PSR-4: Y0hn\ => Y0hn/)
+Yohns/Gens/Legal/          # PHP library (PSR-4: Yohns\ => Yohns/)
   ├── LegalPageController.php    # AJAX request handler
   ├── LegalPageGenerator.php     # Core template processor
   ├── LegalPageTemplate.php      # Template discovery
@@ -144,7 +144,7 @@ To validate template or generator changes:
 ```php
 <?php
 require 'vendor/autoload.php';
-use Y0hn\Gens\Legal\LegalPageGenerator;
+use Yohns\Gens\Legal\LegalPageGenerator;
 
 $gen = new LegalPageGenerator('privacy-policy', 'personal', [
     'company:name' => 'Test Co'
@@ -158,7 +158,7 @@ echo $gen->generate();
 - `legal/implementation-guide.md` - Original class design specs
 - `legal/placeholders/cheat-sheet.md` - Complete placeholder reference
 - `ajax/ajax_legal_handler.php` - AJAX routing logic
-- `Y0hn/Gens/Legal/LegalPageGenerator.php` - Core template engine (lines 1-300 contain key methods)
+- `Yohns/Gens/Legal/LegalPageGenerator.php` - Core template engine (lines 1-300 contain key methods)
 
 ## Legacy Note
 
