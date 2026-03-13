@@ -1,41 +1,30 @@
 {
-	"name": "yohns/a-composer-website",
-	"description": "Hit the ground running with all the basic functionality for a website, already set, configured, and ready to go",
-	"type": "library",
-	"license": "MIT",
-	"autoload": {
-		"psr-4": {
-			"Y0hn\\": "Y0hn/"
-		}
-	},
-	"authors": [
-		{
-			"name": "Yohn",
-			"email": "john.skem9@gmail.com"
-		}
-	],
-	"require": {
-		"guzzlehttp/guzzle": "^7.9",
-		"illuminate/support": "^12.13",
-		"intervention/image": "^3.11",
-		"jaybizzle/crawler-detect": "^1.3",
-		"league/commonmark": "^2.7",
-		"league/flysystem": "^3.0",
-		"league/plates": "^3.6",
-		"monolog/monolog": "^3.9",
-		"phpmailer/phpmailer": "^6.10",
-		"stripe/stripe-php": "^18.1",
-		"vlucas/phpdotenv": "^5.6",
-		"yohns/config": "^1.2",
-		"yohns/seo-manager": "^0.8.0"
-	},
-	"minimum-stability": "stable",
-	"prefer-stable": true,
-	"config": {
-		"optimize-autoloader": true,
-		"sort-packages": true
-	},
-	"require-dev": {
-		"phpunit/phpunit": "^12.4"
-	}
+    "name": "yohns/legal-pages",
+    "description": "Generate customizable legal pages (Privacy Policy, Terms of Service, etc.) from Markdown templates with placeholder substitution — outputs Markdown or Bootstrap 5.3.8 HTML",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Yohns\\": "Yohns/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Yohn",
+            "email": "john.skem9@gmail.com"
+        }
+    ],
+    "require": {
+        "yohns/config": "^1.2",
+        "league/commonmark": "^2.7"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.4"
+    }
 }
