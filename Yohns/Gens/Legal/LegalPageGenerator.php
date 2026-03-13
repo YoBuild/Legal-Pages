@@ -415,14 +415,15 @@ class LegalPageGenerator {
 	}
 
 	/**
-	 * Convert generated markdown to HTML using League\CommonMark
+	 * Convert generated markdown to HTML with Bootstrap 5.3.8 classes
 	 *
 	 * If the template was HTML, returns it as-is.
 	 *
-	 * @return string Generated HTML content
+	 * @param bool $full If true, wrap in a full HTML page with Bootstrap CDN
+	 * @return string Generated HTML content with Bootstrap classes
 	 * @throws \Exception If conversion fails or template not found
 	 */
-	public function convertToHtml(): string {
+	public function convertToHtml(bool $full = false): string {
 		// Generate the base content
 		$content = $this->generate();
 
@@ -435,7 +436,32 @@ class LegalPageGenerator {
 
 		// Convert markdown to HTML using League\CommonMark
 		$converter = new \League\CommonMark\CommonMarkConverter();
-		return $converter->convert($content)->getContent();
+		$html = $converter->convert($content)->getContent();
+
+		// Add Bootstrap classes to HTML elements
+		$html = $this->addBootstrapClasses($html);
+
+		if ($full) {
+			$title = $this->formatName($this->pageType);
+			$html = <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{$title}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-4">
+        {$html}
+    </div>
+</body>
+</html>
+HTML;
+		}
+
+		return $html;
 	}
 
 	/**
