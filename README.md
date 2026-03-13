@@ -2,11 +2,47 @@
 
 Generate customizable legal pages (Privacy Policy, Terms of Service, etc.) from Markdown templates with placeholder substitution — outputs Markdown or Bootstrap 5.3.8 HTML.
 
-## Quick Start
+## Getting Started
+
+**1. Install via Composer:**
 
 ```bash
 composer require yohns/legal-pages
 ```
+
+**2. Publish starter files:**
+
+```bash
+php vendor/bin/legal-pages publish
+```
+
+This copies a config file, a quickstart script, and an optional web UI into a `legal-pages/` directory in your project root.
+
+**3. Edit your config and generate:**
+
+```bash
+# Edit legal-pages/config/legal-pages.php with your company details, then:
+php legal-pages/generate.php
+```
+
+Output files (Markdown + Bootstrap HTML) are saved to `legal-pages/generated/`.
+
+### Publish Options
+
+```bash
+# Publish everything (config + quickstart + web UI)
+php vendor/bin/legal-pages publish
+
+# Publish only specific parts
+php vendor/bin/legal-pages publish --config
+php vendor/bin/legal-pages publish --quickstart
+php vendor/bin/legal-pages publish --ui
+
+# Custom output directory
+php vendor/bin/legal-pages publish --dir=my-legal/
+```
+
+## Programmatic Usage
 
 ```php
 <?php
