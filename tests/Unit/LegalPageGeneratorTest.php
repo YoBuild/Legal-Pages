@@ -146,4 +146,66 @@ class LegalPageGeneratorTest extends TestCase
 			$this->assertTrue(true);
 		}
 	}
+
+	/**
+	 * Test that convertToHtml adds Bootstrap classes to elements
+	 */
+	public function testConvertToHtmlAddsBootstrapClasses()
+	{
+		$gen = new LegalPageGenerator(
+			'privacy-policy',
+			'personal',
+			['company:name' => 'Test Co', 'website:url' => 'https://test.com']
+		);
+
+		$html = $gen->convertToHtml();
+
+		// Should contain Bootstrap classes on elements
+		// Headings get mb-3
+		$this->assertMatchesRegularExpression('/<h[1-6][^>]*class="[^"]*mb-3[^"]*"/', $html);
+		// Paragraphs get mb-2
+		$this->assertStringContainsString('class="mb-2"', $html);
+		// Should NOT contain full page wrapper
+		$this->assertStringNotContainsString('<!DOCTYPE html>', $html);
+		$this->assertStringNotContainsString('bootstrap.min.css', $html);
+	}
+
+	/**
+	 * Test that convertToHtml(full: true) wraps in full HTML page with Bootstrap CDN
+	 */
+	public function testConvertToHtmlFullPage()
+	{
+		$gen = new LegalPageGenerator(
+			'privacy-policy',
+			'personal',
+			['company:name' => 'Test Co', 'website:url' => 'https://test.com']
+		);
+
+		$html = $gen->convertToHtml(full: true);
+
+		// Should have full page structure
+		$this->assertStringContainsString('<!DOCTYPE html>', $html);
+		$this->assertStringContainsString('bootstrap@5.3.8/dist/css/bootstrap.min.css', $html);
+		$this->assertStringContainsString('<div class="container py-4">', $html);
+		// Title should be derived from page type
+		$this->assertStringContainsString('<title>Privacy Policy</title>', $html);
+	}
+
+	/**
+	 * Test that tables get Bootstrap table classes
+	 */
+	public function testBootstrapTableClasses()
+	{
+		$gen = new LegalPageGenerator('privacy-policy', 'personal', []);
+
+		// Use reflection to test addBootstrapClasses directly
+		$reflection = new \ReflectionClass($gen);
+		$method = $reflection->getMethod('addBootstrapClasses');
+		$method->setAccessible(true);
+
+		$html = '<table><thead><tr><th>Header</th></tr></thead></table>';
+		$result = $method->invoke($gen, $html);
+
+		$this->assertStringContainsString('class="table table-striped"', $result);
+	}
 }
